@@ -22,3 +22,13 @@ Users can enter their name, specify the number of subjects, provide their grades
 - **Input Validation** – Validate student information, subject names, grades, and units.
 - **Responsive Interface** – Provide a user-friendly interface across desktop and mobile devices.
 - **Session-Based Results** – Preserve calculated results using PHP sessions and the Post/Redirect/Get pattern.
+
+## Programming Languages Used
+
+| Programming Languages | Purpose |
+|---|---|
+| PHP | Backend processing and GWA calculations |
+| HTML5 | Application structure |
+| CSS3 | Styling and responsive layout |
+| JavaScript | Dynamic subject management and client-side validation |
+| PHP Sessions | Temporary storage of calculated results |
