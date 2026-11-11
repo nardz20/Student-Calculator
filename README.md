@@ -135,13 +135,13 @@ Responsible for handling student information and grade computations.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/student-grade-calculator.git
+git clone https://github.com/your-username/Student-Grade-Calculator.git
 ```
 
 ### 2. Navigate to the Project Folder
 
 ```bash
-cd student-grade-calculator
+cd Student-Grade-Calculator
 ```
 
 ### 3. Run the PHP Development Server
