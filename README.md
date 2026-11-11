@@ -1,4 +1,4 @@
-#Student Grade Calculator
+Student Grade Calculator
 
 A simple and user-friendly web-based Student Grade Tracker Calculator built with PHP, HTML, CSS, and JavaScript. It helps students calculate their General Weighted Average (GWA), monitor their subject grades, and identify their highest and lowest grades.
 
