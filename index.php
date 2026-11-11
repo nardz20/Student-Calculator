@@ -371,3 +371,124 @@ $rows = array_slice($rows, 0, $numberOfSubjects);
         }
     </style>
 </head>
+    
+<body>
+<main class="container">
+    <header class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">STUD GRADE TRACKER · GRADE COMPUTATION </span>
+            <h1>Make every<br>grade count.</h1>
+            <p>Welcome to <strong>Stud Grade Tracker</strong> — your colorful study companion for organizing subjects, checking your weighted GWA, and spotting your highest and lowest grades.</p>
+        </div>
+        <aside class="hero-card" aria-label="Grade scale information">
+            <strong>One place. Clear results.</strong>
+            <p>Enter your subject grades and units to calculate your weighted average and view your standing.</p>
+            <div class="scale-chips"><span>1.00</span><span>2.00</span><span>3.00</span><span>4.00</span><span>5.00</span></div>
+        </aside>
+    </header>
+
+    <form method="post" id="gwaForm">
+        <section class="panel">
+            <h2 class="section-title"><span class="section-icon">👨‍🎓</span> Student Information</h2>
+            <div class="field-grid">
+                <div>
+                    <label for="student_name">Student name</label>
+                    <input id="student_name" name="student_name" type="text" placeholder="Enter your name" value="<?= textCharValue($studentName) ?>" required>
+                </div>
+                <div>
+                    <label for="number_of_subjects">Number of subjects</label>
+                    <input id="number_of_subjects" name="number_of_subjects" type="number"
+                           min="1" max="100" step="1" value="<?= $numberOfSubjects > 0 ? textCharValue($numberOfSubjects) : "" ?>" placeholder="Enter subject count">
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn-secondary" type="button" id="setSubjectCount">＋ Add Subjects</button>
+            </div>
+            <p class="form-note">Choose how many subjects you need, then fill in each subject's name, grade, and units.</p>
+        </section>
+
+        <section class="panel">
+            <h2 class="section-title"><span class="section-icon">📚</span> Subject Details</h2>
+            <div class="subject-list">
+            <?php if (count($rows) === 0): ?>
+                <p class="form-note" id="emptySubjectsMessage">No subjects added yet. Enter the number of subjects above and click “Add Subjects”.</p>
+            <?php endif; ?>
+            <?php foreach ($rows as $index => $row): ?>
+            <section class="subject">
+                <div class="subject-heading"><span class="subject-number"><?= $index + 1 ?></span> Subject <?= $index + 1 ?></div>
+                <label for="subject_name_<?= $index ?>">Enter subject name:</label>
+                <input id="subject_name_<?= $index ?>" name="subjects[<?= $index ?>][name]"
+                       value="<?= textCharValue($row["name"] ?? "") ?>" required>
+
+                <label for="grade_<?= $index ?>">Enter grade:</label>
+                <input id="grade_<?= $index ?>" name="subjects[<?= $index ?>][grade]" type="number"
+                       min="1" max="5" step="0.01" value="<?= textCharValue($row["grade"] ?? "") ?>" required>
+
+                <label for="units_<?= $index ?>">Enter units:</label>
+                <input id="units_<?= $index ?>" name="subjects[<?= $index ?>][units]" type="number"
+                       min="1" step="1" value="<?= textCharValue($row["units"] ?? "") ?>" required>
+            </section>
+            <?php endforeach; ?>
+            </div>
+            <div class="actions">
+                <button class="btn-primary" type="submit" name="calculate" value="1">Calculate GWA</button>
+                <button class="btn-secondary" type="button" id="clearAllSubjects">Clear All Subjects</button>
+            </div>
+            <p class="form-note">Grades are interpreted on a 1.00–5.00 scale. Lower numeric grades are higher grades.</p>
+        </section>
+    </form>
+
+    <?php if ($errors): ?>
+        <div class="error" role="alert">
+            <?php foreach ($errors as $error): ?><p><?= textCharValue($error) ?></p><?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($calculator !== null && $result !== null): ?>
+        <section class="result" id="gwaSummary">
+            <h2 class="result-heading"><span class="section-icon">📋</span> Your GWA Summary</h2>
+            <p class="result-subtitle">Here's the result based on your subject grades and units.</p>
+            <div class="student-pill">👨‍🎓 <?= textCharValue($calculator->studentName) ?></div>
+            <h3>Subject breakdown</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr><th>Subject</th><th>Grade</th><th>Units</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($calculator->subjects as $subject): ?>
+                        <tr>
+                            <td><strong><?= textCharValue($subject->name) ?></strong></td>
+                            <td><strong><?= number_format($subject->grade, 2) ?></strong></td>
+                            <td><?= textCharValue($subject->units) ?></td>
+                            <td>
+                                <div class="status-cell">
+                                    <span class="status <?= $subject->getStatus() === "Passed" ? "" : "status-failed" ?>"><?= textCharValue($subject->getStatus()) ?></span>
+                                    <?php $identifier = $calculator->getGradeIdentifier($subject); ?>
+                                    <?php if ($identifier !== ""): ?>
+                                        <span class="grade-tag <?= textCharValue($calculator->getGradeIdentifierClass($subject)) ?>"><?= textCharValue($identifier) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="metrics">
+                <div class="metric metric-gwa">
+                    <span class="metric-label">Your GWA</span>
+                    <span class="metric-value"><?= number_format($result["gwa"], 2) ?></span>
+                    <?php $gwaProgress = max(0, min(100, ((6 - $result["gwa"]) / 5) * 100)); ?>
+                    <div class="gwa-scale" aria-label="Grade scale indicator"><div class="gwa-scale-fill" style="width: <?= number_format($gwaProgress, 2, '.', '') ?>%"></div></div>
+                </div>
+                <div class="metric"><span class="metric-label">Total units</span><span class="metric-value"><?= textCharValue($result["totalUnits"]) ?></span></div>
+                <div class="metric"><span class="metric-label">Subjects</span><span class="metric-value"><?= count($calculator->subjects) ?></span></div>
+            </div>
+            <div class="remarks <?= $result["gwa"] <= 3.00 ? "" : "remarks-failed" ?>">
+                <?= $result["gwa"] <= 3.00 ? "Overall Remarks: Passed" : "Overall Remarks: Failed" ?>
+            </div>
+        </section>
+    <?php endif; ?>
+    <footer class="footer-note">STUDENT GRADE TRACKER • A simple way to stay on top of your grades</footer>
+</main>
