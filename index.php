@@ -190,3 +190,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["calculate"])) {
             $subjects[] = new Subject($name, $grade, $units);
         }
     }
+                
+if (count($errors) == 0) {
+        // The calculator object handles all grade calculations.
+        $calculator = new StudentGwaCalculator($studentName, $subjects);
+        $result = $calculator->calculateGWA();
+
+        // Save the result for the next GET request (Post/Redirect/Get).
+        $_SESSION["gwa_result"] = [
+            "studentName" => $studentName,
+            "subjects" => array_map(function ($subject) {
+                return [
+                    "name" => $subject->name,
+                    "grade" => $subject->grade,
+                    "units" => $subject->units
+                ];
+            }, $subjects)
+        ];
+
+        header("Location: " . strtok($_SERVER["REQUEST_URI"], "?"));
+        exit;
+    }
+}
