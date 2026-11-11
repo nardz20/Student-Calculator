@@ -5,7 +5,7 @@ session_start();
  * A Simple OOP version based on the original Python calculator.
  *
  * The Subject class stores one subject.
- * The StudentGwaCalculator class calculates totals, GWA, and grade identifiers.
+ * The StudentGradeCalculator class calculates totals, GWA, and grade identifiers.
  * The form below collects input and displays the result.
  */
 
