@@ -152,3 +152,41 @@ if ($numberOfSubjects > 100) {
 if (!is_array($rows) || count($rows) == 0) {
     $rows = [];
 }
+
+// Calculate only when the Calculate GWA button is clicked.
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["calculate"])) {
+    if ($studentName == "") {
+        $errors[] = "Please enter the student name.";
+    }
+
+    if (count($rows) == 0) {
+        $errors[] = "Please add at least one subject.";
+    }
+
+    $subjects = [];
+
+    if (count($errors) == 0) {
+        foreach ($rows as $row) {
+            $name = trim($row["name"] ?? "");
+            $gradeText = trim($row["grade"] ?? "");
+            $unitsText = trim($row["units"] ?? "");
+
+            // Check that fields are filled before converting them to numbers.
+            if ($name == "" || $gradeText == "" || $unitsText == "" ||
+                !is_numeric($gradeText) || !is_numeric($unitsText)) {
+                $errors[] = "Enter a subject name, a grade from 1 to 5, and positive whole-number units.";
+                break;
+            }
+
+            $grade = (float)$gradeText;
+            $units = filter_var($unitsText, FILTER_VALIDATE_INT);
+
+            if ($grade < 1 || $grade > 5 || $units === false || $units < 1) {
+                $errors[] = "Enter a subject name, a grade from 1 to 5, and positive whole-number units.";
+                break;
+            }
+
+            // Turn the input row into a Subject object.
+            $subjects[] = new Subject($name, $grade, $units);
+        }
+    }
