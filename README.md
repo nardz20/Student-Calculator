@@ -4,7 +4,7 @@ A simple and user-friendly web-based Student Grade Tracker Calculator built with
 
 ## Project Overview
 
-The STudent Grade Calculator is a web application based on an original Python grade calculator. It uses Object-Oriented Programming (OOP) in PHP to organize subject information and perform grade calculations.
+The Student Grade Calculator is a web application based on an original Python grade calculator. It uses Object-Oriented Programming (OOP) in PHP to organize subject information and perform grade calculations.
 
 Users can enter their name, specify the number of subjects, provide their grades and units, and calculate their overall GWA.
 
@@ -123,3 +123,62 @@ Responsible for handling student information and grade computations.
 - `getLowestGrade()` – Identifies the lowest numerical grade standing.
 - `getGradeIdentifier()` – Identifies whether a subject has the highest or lowest grade.
 - `getGradeIdentifierClass()` – Assigns the appropriate CSS class for grade identification.
+
+## Installation and Setup
+
+### Requirements
+
+- PHP 7.4 or later
+- A web browser
+- Visual Studio Code (optional)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/student-grade-calculator.git
+```
+
+### 2. Navigate to the Project Folder
+
+```bash
+cd student-grade-calculator
+```
+
+### 3. Run the PHP Development Server
+
+```bash
+php -S localhost:8000
+```
+
+### 4. Open the Application
+
+Visit the following address in your web browser:
+
+```text
+http://localhost:8000
+```
+
+You can now use the STUD Grade Tracker Calculator.
+
+## Project Structure
+
+```text
+student-grade-calculator/
+│
+├── index.php
+└── README.md
+```
+
+- `index.php` – Contains the PHP classes, grade calculations, HTML structure, CSS styling, JavaScript functionality, and form validation.
+- `README.md` – Contains the project documentation and setup instructions.
+
+## Notes
+
+- The application does not require a database.
+- Calculated results are temporarily stored using PHP sessions.
+- The application uses the PHP built-in development server for local testing.
+- The project is designed for straightforward grade computation and student grade monitoring.
+
+## License
+
+This project is intended for educational purposes and academic use.
