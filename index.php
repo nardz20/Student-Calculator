@@ -129,3 +129,26 @@ class StudentGwaCalculator
         return "";
     }
 }
+
+function textCharValue(string $value)
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");
+}
+
+// Keep submitted form values so the user does not have to retype them.
+$studentName = trim($_POST["student_name"] ?? "");
+$numberOfSubjects = isset($_POST["number_of_subjects"]) ? (int)$_POST["number_of_subjects"] : 0;
+$rows = $_POST["subjects"] ?? [];
+$errors = [];
+$calculator = null;
+$result = null;
+
+if ($numberOfSubjects < 0) {
+    $numberOfSubjects = 0;
+}
+if ($numberOfSubjects > 100) {
+    $numberOfSubjects = 100;
+}
+if (!is_array($rows) || count($rows) == 0) {
+    $rows = [];
+}
