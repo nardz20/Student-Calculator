@@ -1,7 +1,7 @@
 ?php
 session_start();
 /*
- * STUD GRADE TRACK CALCULATOR
+ * STUDENT GRADE CALCULATOR
  * A Simple OOP version based on the original Python calculator.
  *
  * The Subject class stores one subject.
