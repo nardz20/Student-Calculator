@@ -492,3 +492,143 @@ $rows = array_slice($rows, 0, $numberOfSubjects);
     <?php endif; ?>
     <footer class="footer-note">STUDENT GRADE TRACKER • A simple way to stay on top of your grades</footer>
 </main>
+<script>
+(function () {
+    const countInput = document.getElementById("number_of_subjects");
+    const studentNameInput = document.getElementById("student_name");
+    const setCountButton = document.getElementById("setSubjectCount");
+    const clearAllSubjectsButton = document.getElementById("clearAllSubjects");
+    const subjectList = document.querySelector(".subject-list");
+    const subjectSection = subjectList.closest(".panel");
+    const form = document.getElementById("gwaForm");
+
+    function createSubjectCard(index, values) {
+        const card = document.createElement("section");
+        card.className = "subject";
+
+        const heading = document.createElement("div");
+        heading.className = "subject-heading";
+        const number = document.createElement("span");
+        number.className = "subject-number";
+        number.textContent = index + 1;
+        heading.append(number, document.createTextNode(" Subject " + (index + 1)));
+        card.appendChild(heading);
+
+        const fields = [
+            { key: "name", label: "Enter subject name:", type: "text", value: values.name || "" },
+            { key: "grade", label: "Enter grade:", type: "number", value: values.grade || "", min: "1", max: "5", step: "0.01" },
+            { key: "units", label: "Enter units:", type: "number", value: values.units || "", min: "1", step: "1" }
+        ];
+
+        fields.forEach(function (field) {
+            const id = field.key + "_" + index;
+            const label = document.createElement("label");
+            label.htmlFor = id;
+            label.textContent = field.label;
+
+            const input = document.createElement("input");
+            input.id = id;
+            input.name = "subjects[" + index + "][" + field.key + "]";
+            input.type = field.type;
+            input.value = field.value;
+            if (field.min) input.min = field.min;
+            if (field.max) input.max = field.max;
+            if (field.step) input.step = field.step;
+            input.required = true;
+
+            card.append(label, input);
+        });
+
+        return card;
+    }
+
+    function updateSubjectCount() {
+        if (!studentNameInput.value.trim()) {
+            alert("Please enter the student name before adding subjects.");
+            studentNameInput.focus();
+            return;
+        }
+
+        let count = Number.parseInt(countInput.value, 10);
+        if (!Number.isFinite(count) || count < 1 || count > 100) {
+            alert("Please enter a number of subjects from 1 to 100 first.");
+            countInput.focus();
+            return;
+        }
+        countInput.value = count;
+
+        const existingValues = [];
+        subjectList.querySelectorAll(".subject").forEach(function (card) {
+            existingValues.push({
+                name: card.querySelector('input[name$="[name]"]').value,
+                grade: card.querySelector('input[name$="[grade]"]').value,
+                units: card.querySelector('input[name$="[units]"]').value
+            });
+        });
+
+        subjectList.replaceChildren();
+        const emptyMessage = document.getElementById("emptySubjectsMessage");
+        if (emptyMessage) emptyMessage.remove();
+
+        for (let i = 0; i < count; i++) {
+            subjectList.appendChild(createSubjectCard(i, existingValues[i] || {}));
+        }
+
+        subjectSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    setCountButton.addEventListener("click", updateSubjectCount);
+
+    // Clear all subject cards and reset the subject count without clearing the student name.
+    clearAllSubjectsButton.addEventListener("click", function () {
+        if (countInput.value.trim() === "") {
+            alert("Please enter the number of subjects first before clearing subject details.");
+            countInput.focus();
+            return;
+        }
+
+        const hasSubjects = subjectList.querySelectorAll(".subject").length > 0;
+
+        if (hasSubjects && !window.confirm("Clear all subject details? This cannot be undone.")) {
+            return;
+        }
+
+        subjectList.replaceChildren();
+
+        const emptyMessage = document.createElement("p");
+        emptyMessage.className = "form-note";
+        emptyMessage.id = "emptySubjectsMessage";
+        emptyMessage.textContent = "No subjects added yet. Enter the number of subjects above and click “Add Subjects”.";
+        subjectList.appendChild(emptyMessage);
+
+        countInput.value = "";
+        countInput.focus();
+    });
+
+    form.addEventListener("submit", function (event) {
+        const count = Number.parseInt(countInput.value, 10);
+        if (!Number.isFinite(count) || count < 1 || count > 100) {
+            event.preventDefault();
+            countInput.focus();
+            alert("Please enter a subject count from 1 to 100, then click Add Subjects.");
+            return;
+        }
+        if (subjectList.querySelectorAll(".subject").length !== count) {
+            event.preventDefault();
+            updateSubjectCount();
+            alert("The subject list was updated. Please review the subjects and click Calculate My GWA again.");
+        }
+    });
+
+    // After calculation, the server redirects back with the summary rendered.
+    // Move the viewport to the result instead of leaving the user at the page top.
+    const gwaSummary = document.getElementById("gwaSummary");
+    if (gwaSummary) {
+        window.requestAnimationFrame(function () {
+            gwaSummary.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }
+})();
+</script>
+</body>
+</html>
