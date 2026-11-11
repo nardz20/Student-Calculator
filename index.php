@@ -212,3 +212,31 @@ if (count($errors) == 0) {
         exit;
     }
 }
+
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_SESSION["gwa_result"])) {
+    $saved = $_SESSION["gwa_result"];
+    unset($_SESSION["gwa_result"]);
+
+    $studentName = $saved["studentName"];
+    $rows = $saved["subjects"];
+    $numberOfSubjects = count($rows);
+
+    $savedSubjects = [];
+    foreach ($rows as $row) {
+        $savedSubjects[] = new Subject(
+            $row["name"],
+            (float)$row["grade"],
+            (int)$row["units"]
+        );
+    }
+
+    $calculator = new StudentGwaCalculator($studentName, $savedSubjects);
+    $result = $calculator->calculateGWA();
+}
+
+// Keep the displayed subject count consistent while preserving entered data.
+while (count($rows) < $numberOfSubjects) {
+    $rows[] = ["name" => "", "grade" => "", "units" => ""];
+}
+$rows = array_slice($rows, 0, $numberOfSubjects);
+?>
